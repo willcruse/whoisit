@@ -11,27 +11,40 @@ import (
 )
 
 type Response struct {
-	Submissions []Submission `json:"subs"`
+	Things []Thing `json:"things"`
 }
 
-type Submission struct {
+type Thing struct {
 	User          string `firestore:"User"`
 	Points        int    `firestore:"Score"`
 	Thing         string `firestore:"Thing"`
 	Justification string `firestore:"Justification"`
-	PollScore     int    `firestore:"PollScore"`
-	Votes         int    `firestore:"Votes"`
-	SubID string `firestore:"SubID"`
+	ThingID       string `firestore:"ThingID"`
 }
 
-func GetSubmissions(w http.ResponseWriter, r *http.Request) {
+type Request struct {
+	UserEmail string `json:"email"`
+}
+
+func GetThings(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	decoder := json.NewDecoder(r.Body)
+	request := new(Request)
+	if err := decoder.Decode(&request); err != nil {
+		resp := Response{make([]Thing, 0)}
+		w.WriteHeader(http.StatusInternalServerError)
+		if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			panic(err)
+		}
+		return
+	}
 
 	// Connect to firestore
 	ctx := context.Background()
 	client, err := firestore.NewClient(ctx, "who-is-it-265713")
 	if err != nil {
-		resp := Response{make([]Submission, 0)}
+		resp := Response{make([]Thing, 0)}
 		w.WriteHeader(http.StatusInternalServerError)
 		if err := json.NewEncoder(w).Encode(&resp); err != nil {
 			log.Fatalln(err)
@@ -39,8 +52,8 @@ func GetSubmissions(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Close()
 
-	iter := client.Collection("submissions").Documents(ctx)
-	resp := Response{make([]Submission, 0)}
+	iter := client.Collection("things").Documents(ctx)
+	resp := Response{make([]Thing, 0)}
 
 	for {
 		doc, err := iter.Next()
@@ -48,22 +61,23 @@ func GetSubmissions(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if err != nil {
-			resp := Response{make([]Submission, 0)}
+			resp := Response{make([]Thing, 0)}
 			w.WriteHeader(http.StatusInternalServerError)
 			if err := json.NewEncoder(w).Encode(&resp); err != nil {
 				log.Fatalln(err)
 			}
 		}
-		var tempSub Submission
-		if err := doc.DataTo(&tempSub); err != nil {
-			resp := Response{make([]Submission, 0)}
+		var tempThing Thing
+		if err := doc.DataTo(&tempThing); err != nil {
+			resp := Response{make([]Thing, 0)}
 			w.WriteHeader(http.StatusInternalServerError)
 			if err := json.NewEncoder(w).Encode(&resp); err != nil {
 				log.Fatalln(err)
 			}
 		}
-		if 
-		resp.Submissions = append(resp.Submissions, tempSub)
+		if tempThing.User == request.UserEmail {
+			resp.Things = append(resp.Things, tempThing)
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
