@@ -42,6 +42,7 @@ const IndexPage = () => {
       if (json.success === true) {
         if (json.auth === true) {
           cookies.set("loginHash", json.hash);
+          navigate("/home");
         } 
       }
     }).catch((err) => {
@@ -61,9 +62,16 @@ const IndexPage = () => {
         <Form.Label>Password</Form.Label>
         <Form.Control type="password" placeholder="Password" onInput={e => setPassword(e.target.value)}/>
       </Form.Group>
+      <Form.Group>
       <Button variant="primary" type="submit">
-        Submit
+        Login
       </Button>
+      </Form.Group>
+      <Form.Group>
+      <Button variant="secondary" onClick={() => {navigate("/signup")}}>
+        Sign Up
+      </Button>
+      </Form.Group>
     </Form>
     </Layout>
   )

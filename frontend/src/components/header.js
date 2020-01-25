@@ -5,12 +5,12 @@ import {Link} from "gatsby";
 
 const Header = () => (
   <Navbar bg="light" expand="lg">
-    <Navbar.Brand><Link to="/">Who is it?</Link></Navbar.Brand>
+    <Navbar.Brand><Link to="/home">Who is it?</Link></Navbar.Brand>
     <Navbar.Toggle aria-controls="basic-navbar-nav" />
     <Navbar.Collapse id="basic-navbar-nav">
       <Nav className="mr-auto">
-        <Nav.Item><Link to="/home">Your, Profile</Link></Nav.Item>
-        <Nav.Item><Link to="/submit">Submit Score</Link></Nav.Item>
+        <Nav.Item style={Header.styles.navItem}><Link to="/polls">Open Polls</Link></Nav.Item>
+        <Nav.Item style={Header.styles.navItem}><Link to="/submit">Submit Score</Link></Nav.Item>
       </Nav>
     </Navbar.Collapse>
   </Navbar>
@@ -24,4 +24,11 @@ Header.defaultProps = {
   siteTitle: `Who is it?`,
 }
 
+Header.styles = {
+  navItem: {
+    paddingRight: 10,
+  }
+}
+
 export default Header
+
