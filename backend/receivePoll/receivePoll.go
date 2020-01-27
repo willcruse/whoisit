@@ -116,7 +116,7 @@ func ReceivePoll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tempSub.PollScore += request.Value
-	tempSub.Votes += 1
+	tempSub.Votes++
 
 	if tempSub.Votes > 4 && tempSub.PollScore < 3 {
 		_, err := client.Collection("submissions").Doc(request.SubID).Delete(ctx)
