@@ -7,7 +7,7 @@ const LoginCheck = () => {
     var loginHash = cookies.get("loginHash");
 
     if (loginHash == undefined) {
-        navigate("/");
+        navigate("/").then(r => console.log("nav"));
     }
 
     return (<></>)
